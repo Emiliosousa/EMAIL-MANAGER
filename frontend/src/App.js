@@ -54,13 +54,11 @@ Cuando el usuario diga que redactes o envíes el correo, sigue estas reglas estr
       const subjectMatch = content.match(/\[ASUNTO\]:\s*(.+)/i);
       if (subjectMatch) {
         setEmailSubject(subjectMatch[1].trim());
+        setEmailReady(true);
       }
 
       const cleanBody = content.replace(/\[ASUNTO\]:\s*.+/i, '').trim();
       setGeneratedEmail(cleanBody);
-
-      const esCorreo = cleanBody.length > 100;
-      if (esCorreo) setEmailReady(true);
 
       setMessages(prev => [...prev, { role: 'assistant', content }]);
     } catch (err) {
@@ -93,17 +91,22 @@ Cuando el usuario diga que redactes o envíes el correo, sigue estas reglas estr
 
     setSending(true);
     try {
-      await axios.post('http://localhost:4000/send-email', {
-        to: emailTo,
-        subject: emailSubject,
-        text: generatedEmail,
-      });
+      await axios.post(
+        'http://localhost:4000/send-email',
+        {
+          to: emailTo,
+          subject: emailSubject,
+          text: generatedEmail,
+        },
+        { timeout: 10000 }
+      );
       setStatus('Correo enviado con éxito');
     } catch (err) {
       console.error(err);
       setStatus('Error al enviar el correo');
+    } finally {
+      setSending(false);
     }
-    setSending(false);
   };
 
   return (
