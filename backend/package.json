@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "googleapis": "^154.0.0",
+    "nodemailer": "^7.0.5",
+    "openai": "^5.10.2"
+  }
+}
